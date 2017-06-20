@@ -5,6 +5,8 @@ In this dataset, there are approximately 21,000 recorded home sales ranging in p
 
 ![Fig 1](seattle.png)
 
+![](water.png)
+
 This plot resembles the Seattle area with respect to the open areas that are inlets of water.  Home sales were classified into 10 clusters based on feature characteristics.  The darker groupings represent more expensive homes.  As one can see from the coloration, waterfront homes and homes near water have higher prices.  Also homes that are at higher elevation with views to the water also are more expensive.    Figure 2 below shows waterfront and view home histograms of price per square feet.
 
 
@@ -35,26 +37,24 @@ The resulting score was an R-squared of 0.86 an increase of 35 percentage points
 The second model included a minimal set of variable to achieve a score of .85:
 Index(['sqft_living', 'grade', 'lat', 'long', 'waterfront'], dtype='object').  
 
-The final test was to provide a confidence level for a customer with our prediction model.  For each observation in the test dataset, the model determined whether the actual sales price was within 10% of the model estimate.  The number of observations within the band divided by the number of observations is the expected probability that the customer’s selling price is within 10% of the model.
-
-<table>
-
-<th>price_buckets</th><th>percent</th><th>count</th>
+The final test was to provide a confidence level for a customer with our prediction model.  For each observation in the test dataset, the model determined whether the actual sales price was within 10% of the model estimate.  The number of observations within the band divided by the number of observations is the expected probability that the customer’s selling price is within 10% of the model.<table>
+<th>price_buckets</th><th>probability</th><th>count</th>
 <tr><td>(0, 300000]</td><td>0.44</td><td>1450</td></tr>
-
-<tr><td>(300000, 500000]</td><td>    0.534082</td>   <td>2582</td></tr>
-
-<tr><td>(500000, 700000]</td><td>    0.487852 </td>  </td><td>1564</td></tr>
-<tr><td>(700000, 1000000]</td><td>   0.458655</td>    <td>907</td></tr>
-<tr><td>(1000000, 6000000]</td><td>  0.289308</td>    <td>477</td></tr>
-
+<tr><td>(300000, 500000]</td><td>    0.53</td>   <td>2582</td></tr>
+<tr><td>(500000, 700000]</td><td>    0.49 </td>  </td><td>1564</td></tr>
+<tr><td>(700000, 1000000]</td><td>   0.46</td>    <td>907</td></tr>
+<tr><td>(1000000, 6000000]</td><td>  0.29</td>    <td>477</td></tr>
 </table>
 
 It appears that the model provides higher confidence for homes that are between 300,000 and 500,000, with lower confidence for homes over $1 million.  This makes sense because homes in the upper price range have lower transaction volume with more volatile pricing.
 
 Further work would be to determine if there are any time-related factors for home pricing.  Our variable time was not very predictive in this model.  The analysis found instances of same sale homes over time.  This information could be used to improve predictions especially for homes with prior sales information.  
 
+| column | column |columns|
+|--------|--------|-------
+| dfsdsdf |   aa   	|      dfsdf
+|dfdssdfds
 
-
+sdf
 
 

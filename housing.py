@@ -7,7 +7,7 @@ import seaborn as sns
 from sklearn.cluster import KMeans
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import StandardScaler
-
+from sklearn.linear_model import LinearRegression
 """Index(['id', 'date', 'price', 'bedrooms', 'bathrooms', 'sqft_living',
        'sqft_lot', 'floors', 'waterfront', 'view', 'condition', 'grade',
        'sqft_above', 'sqft_basement', 'yr_built', 'yr_renovated', 'zipcode',
@@ -17,8 +17,8 @@ from sklearn.preprocessing import StandardScaler
 
 class data():
     def __init__(self):
-        self.centers = centers
-        self.xm = xm
+        # self.centers = centers
+        # self.xm = xm
         df = pd.read_csv('/home/kel/housing/kc_house_data.csv - kc_house_data.csv', parse_dates=True)
 
         df.date = df.date.apply(lambda x: datetime.strptime(x[:-7], "%Y%m%d"))
@@ -26,6 +26,7 @@ class data():
         df['time'] = (df.date - min(df.date)).astype(int)
 
         cond = df.yr_renovated == 0
+
         df.yr_renovated[cond] = df.yr_built
 
         df['renovation_recency'] = df.date.dt.year - df.yr_renovated
@@ -46,6 +47,7 @@ class data():
                          label='average no {} ${:,.0f}/sft'.format(h, df['price_ft'][df[h] == 0].mean()), ax=ax)
             ax.set_title('{} $/sft'.format(h), fontsize=20)
             ax.legend(fontsize=15)
+
 
         numberfeatures = ['grade', 'sqft_living', 'sqft_lot', 'bedrooms', 'bathrooms', 'renovation_recency']
 
@@ -74,9 +76,9 @@ class data():
         n_clusters = 10
         k = KMeans(n_clusters=n_clusters)
         predictions = k.fit_predict(normx, normy)
+        y=pd.DataFrame(y,columns=['price'])
 
-        y = pd.concat([pd.Series(predictions, name='group'), y], axis=1)
-
+        y['group']=predictions.reshape(-1,1)
         price_groups = y.groupby('group')['price'].agg(['mean', 'median', 'count'])
 
         centers = scaler.inverse_transform(k.cluster_centers_)
@@ -85,13 +87,16 @@ class data():
         centers = pd.concat((centers, price_groups), axis=1)
 
         centers.sort_values(by=['median'], inplace=True)
+        self.centers=centers
 
-        xm = pd.concat([xm, pd.Series(predictions, name='group')], axis=1)
+        xm = pd.concat([xm, y['group']], axis=1)
+        self.xm=xmx
         return xm['group']
 
     def map(self):
         self.cluster()
         centers = self.centers
+
         xm = self.xm
         max_median = np.max(centers['median'].values)
 
@@ -105,13 +110,37 @@ class data():
                         label='n={:n}  ${:0f}'.format(centers.loc[i]['count'], centers.loc[i]['median']),
                         c=cm.Reds(centers.loc[i]['median'] / max_median))
 
-        # plt.scatter(centers['long'],centers['lat'],label='Centers',marker='^',s=200)
+        #plt.scatter(centers['long'],centers['lat'],label='Centers',marker='^',s=200)
 
         plt.xlabel('Longitude', size=25)
         plt.ylabel('Latitude', size=25)
         plt.legend(fontsize=12)
-        plt.title('Seattle-Bellvue Real Estate', fontsize=30)
+        plt.title('Seattle-Bellevue Real Estate', fontsize=30)
         plt.show()
+
+    def map2(self):
+        df=self.df.sample(1000)
+
+        df['ages']=pd.qcut(df['age'],q=6,labels=range(6))
+
+
+        for group in sorted(df.ages.unique()):
+
+            mask=df.ages==group
+
+            plt.scatter(df.long[mask], df.lat[mask],
+                        label='{}'.format(group))
+
+                        # c=cm.Reds(centers.loc[i]['median'] / max_median))
+
+
+        plt.xlabel('Longitude', size=25)
+        plt.ylabel('Latitude', size=25)
+        plt.legend(fontsize=12)
+        plt.title('Seattle-Bellevue Real Estate', fontsize=30)
+        plt.show()
+
+
 
     def model_data(self):
 
@@ -119,11 +148,11 @@ class data():
         # mdf.drop(['id','date','lat','long'],axis=1,inplace=True)
         mdf.drop(['id'], axis=1, inplace=True)
         mdf['month'] = mdf.date.dt.month
-
+        mdf['grade']=mdf['grade'].apply(lambda x: np.exp(x))
         mdf.index = mdf.date
         # mdf.drop(['date','yr_renovated','yr_built','zipcode','sqft_above','floors','month','time','view','age','sqft_living15','sqft_basement','condition','bathrooms','bedrooms','renovation_recency','sqft_lot','sqft_lot15'],axis=1,inplace=True)
         mdf.drop(['date', 'yr_renovated', 'yr_built', 'zipcode'], axis=1, inplace=True)
-
+        print(mdf)
         return mdf
 
     def same_sales(self):
@@ -155,11 +184,11 @@ class data():
         xtrain, xtest, ytrain, ytest = x[x.index < dt], x[x.index >= dt], y[y.index < dt], y[y.index >= dt]
 
         model = RandomForestRegressor(n_estimators=20, n_jobs=4, random_state=1)
-
+        #model=LinearRegression()
         model.fit(xtrain, ytrain)
 
         print(model.score(xtest, ytest))
-        print(xtrain.columns[np.argsort(model.feature_importances_)[::-1]])
+        #print(xtrain.columns[np.argsort(model.feature_importances_)[::-1]])
 
         ytest_predict = pd.Series(model.predict(xtest), index=ytest.index, name='ypredict')
 
@@ -190,7 +219,7 @@ class data():
 
 
 d = data()
-# d.plots()
-# d.map()
-d.estimator()
+#d.plots()
+d.map()
+#d.estimator()
 # d.same_sales()
