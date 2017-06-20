@@ -50,11 +50,5 @@ It appears that the model provides higher confidence for homes that are between 
 
 Further work would be to determine if there are any time-related factors for home pricing.  Our variable time was not very predictive in this model.  The analysis found instances of same sale homes over time.  This information could be used to improve predictions especially for homes with prior sales information.  
 
-| column | column |columns|
-|--------|--------|-------
-| dfsdsdf |   aa   	|      dfsdf
-|dfdssdfds
-
-sdf
 
 

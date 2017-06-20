@@ -90,7 +90,7 @@ class data():
         self.centers=centers
 
         xm = pd.concat([xm, y['group']], axis=1)
-        self.xm=xmx
+        self.xm=xm
         return xm['group']
 
     def map(self):
@@ -107,7 +107,7 @@ class data():
             group = group.sample(size)
 
             plt.scatter(group.long, group.lat,
-                        label='n={:n}  ${:0f}'.format(centers.loc[i]['count'], centers.loc[i]['median']),
+                        label='n={:n}  ${:,.0f}'.format(centers.loc[i]['count'], centers.loc[i]['median']),
                         c=cm.Reds(centers.loc[i]['median'] / max_median))
 
         #plt.scatter(centers['long'],centers['lat'],label='Centers',marker='^',s=200)
